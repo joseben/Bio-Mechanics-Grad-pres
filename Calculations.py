@@ -29,10 +29,10 @@ def plot_com(x, y, z=0):
     
     # Plot the force plate corners (assuming 30x30 cm plate)
     plate_corners = np.array([
-        [-15, -15, 0],  # Sensor 1
-        [15, -15, 0],   # Sensor 2
-        [15, 15, 0],    # Sensor 3
-        [-15, 15, 0],   # Sensor 4
+        [-15, -15, 0],  # Sensor 1 Position
+        [15, -15, 0],   # Sensor 2 Position
+        [15, 15, 0],    # Sensor 3 Position
+        [-15, 15, 0],   # Sensor 4 Position
     ])
     
     # Plot force plate
@@ -51,7 +51,6 @@ def plot_com(x, y, z=0):
     ax.set_ylabel('Y (cm)')
     ax.set_zlabel('Z (cm)')
     ax.set_title('Force Plate CoM Visualization')
-    
     # Set axis limits
     ax.set_xlim([-20, 20])
     ax.set_ylim([-20, 20])
