@@ -10,14 +10,14 @@ def calculate_com(sensor_values):
     l_x = 0                      # Length along x-axis
     l_y = 0                      # Length along y-axis
     # Calculate x_com1
-    x_com1 = (((F1 + F2) - 0.5 * W_door) * l_x) / (((F3 + F4) - 0.5 * W_door) + l_x)
+    x_com1 = l_x*((F1 + F2) - (W_door*0.5)) / (( (F1 + F2 + F3 +F4) - W_door) )
 
     # Calculate y_com1
-    y_com1 = (((F2 + F3) - 0.5 * W_door) * l_y) / (((F1 + F4) - 0.5 * W_door) + l_y)
+    y_com1 = l_y*((W_door*0.5) -(F2 +F3)) / (-((F1 + F2 + F3 +F4)- W_door))
 
     return x_com1, y_com1
 
-def plot_com(x, y, z=0):
+def plot_com(x, y, z):
     """Create/update 3D plot of force plate and CoM."""
     plt.ion()  # Enable interactive mode
     
@@ -63,18 +63,20 @@ def plot_com(x, y, z=0):
     plt.draw()
     plt.pause(0.001)
 
-def main():
-    # Initialize plot
+
+if __name__ == "__main__":
+        # Initialize plot
     plt.figure(figsize=(10, 8))
     
     # For Windows: 'COM3', 'COM4', etc.
     # For Linux: '/dev/ttyACM0', '/dev/ttyUSB0', etc.
-    sensor = readSensor(port='COM3', baudrate=115200)
+    #sensor = readSensor(port='COM3', baudrate=115200)
     
     try:
         while True:
             # Read sensor values
-            values = sensor.Readsens()
+            #values = sensor.Readsens()
+            values = [10, 10, 10, 10]  # Dummy values for testing
             
             # Print all sensor values
             print(f"Sensor 1: {values[0]}")
@@ -84,16 +86,15 @@ def main():
             print("-" * 30)
             
             # Calculate and plot CoM
-            x, y= calculate_com(values)
-            z = 0  # x, y= calculate_com(values)
+            
+            x, y = calculate_com(values)
+            input("Press Enter to calculate next CoM...")
+            y,z = calculate_com(values)
             plot_com(x, y,z)
             
             time.sleep(0.1)  # Small delay to not flood the console
             
     except KeyboardInterrupt:
         print("\nStopping sensor reading...")
-    finally:
-        sensor.close()
-
-if __name__ == "__main__":
-    main()
+    #finally:
+        #sensor.close()
