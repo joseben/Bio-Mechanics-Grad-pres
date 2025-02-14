@@ -7,16 +7,16 @@ import matplotlib.pyplot as plt
 #      """Reads sensor values for a specified duration and returns their average."""
 #      values_list = []
 #      start_time = time.time()
-    
+
 #      while time.time() - start_time < duration:
 #          values = sensor.Readsens()  # Read sensor values
 #          values_list.append(values)
 #          time.sleep(0.1)  # Small delay to prevent overloading the sensor
-        
+
 #      # Convert the list to a numpy array and calculate the mean along the rows (axis=0)
 #      values_array = np.array(values_list)
 #      averaged_values = np.mean(values_array, axis=0)
-    
+
 #      return averaged_values
 
 def calculate_com(sensor_values):
@@ -44,13 +44,13 @@ def calculate_com(sensor_values):
 def plot_com(x, y, z):
     """Create/update 3D plot of force plate and CoM."""
     plt.ion()  # Enable interactive mode
-    
+
     # Clear previous plot
     plt.clf()
-    
+
     # Create 3D subplot
     ax = plt.axes(projection='3d')
-    
+
     # Plot the force plate corners (assuming 30x30 cm plate)
     plate_corners = np.array([
         [2.0, 0, 0],  # Sensor 1 Position
@@ -58,18 +58,18 @@ def plot_com(x, y, z):
         [0, 0.85, 0],    # Sensor 3 Position
         [0, 0, 0],   # Sensor 4 Position
     ])
-    
+
     # Plot force plate
-    ax.plot_trisurf(plate_corners[:,0], plate_corners[:,1], plate_corners[:,2], 
+    ax.plot_trisurf(plate_corners[:,0], plate_corners[:,1], plate_corners[:,2],
                     alpha=0.3, color='gray')
-    
+
     # Plot sensors as points
-    ax.scatter(plate_corners[:,0], plate_corners[:,1], plate_corners[:,2], 
+    ax.scatter(plate_corners[:,0], plate_corners[:,1], plate_corners[:,2],
               c='red', marker='o', s=100, label='Sensors')
-    
+
     # Plot CoM
     ax.scatter(x, y, z, c='blue', marker='x', s=100, label='Center of Mass')
-    
+
     # Set labels and title
     ax.set_xlabel('X (m)')
     ax.set_ylabel('Y (m)')
@@ -79,10 +79,10 @@ def plot_com(x, y, z):
     ax.set_xlim([-3, 3])
     ax.set_ylim([-3, 3])
     ax.set_zlim([0, 3])
-    
+
     # Add legend
     ax.legend()
-    
+
     # Update plot
     plt.draw()
     plt.pause(0.001)
@@ -92,71 +92,84 @@ def plot_com(x, y, z):
 if __name__ == "__main__":
         # Initialize plot
     plt.figure(figsize=(6, 4))
-    
+
     # For Windows: 'COM3', 'COM4', etc.
     # For Linux: '/dev/ttyACM0', '/dev/ttyUSB0', etc.
     sensor = readSensor(port='COM7', baudrate=115200)
-    
+
     try:
         while True:
             # Read sensor values
             values = sensor.Readsens()  # Read sensor values
             #values = average_sensor_values(sensor, duration=5)
-                    
+            time.sleep(0.1)
+            sensor.close()
             # Print all sensor values
-            print(f"F 1: {values[0]}")
-            print(f"F 2: {values[1]}")
-            print(f"F 3: {values[2]}")
-            print(f"F 4: {values[3]}")
-            print("-" * 30)
-            print(values[0]+values[1]+values[2]+values[3])
-            
+            # print(f"F 1: {values[0]}")
+            # print(f"F 2: {values[1]}")
+            # print(f"F 3: {values[2]}")
+            # print(f"F 4: {values[3]}")
+            # print("-" * 30)
+            # print(values[0]+values[1]+values[2]+values[3])
+
             # Calculate and plot CoM
             # z,j = calculate_com(values)
             # print()
-            
+
 
             # x, y = calculate_com(values)
             # input("Press Enter to calculate next CoM...")
             # x, y = calculate_com(values)
             # #z,y = calculate_com(values)
-            
+
 
             choice=input("Enter the calculation 1) Print XY ____ 2) Print Z ____  3) Print ALL values")
             match choice:
                 case "1":
                     print("**********************")
+                    sensor = readSensor(port='COM7', baudrate=115200)
+                    time.sleep(0.1)
                     values = sensor.Readsens()  # Read sensor values
                     x=0
                     y=0
                     x, y = calculate_com(values)
                     x=x-0.08
                     y=y-0.08
-                    print(f"X= {x} -- Y= {y}") 
+                    print(f"X= {x} -- Y= {y}")
                     print("**********************")
-                    #sensor.close()
+                    sensor.close()
                 case "2":
                     print("**********************")
+                    sensor = readSensor(port='COM7', baudrate=115200)
+                    time.sleep(0.1)
                     values = sensor.Readsens()  # Read sensor values
                     z=0
                     j=0
                     z,j = calculate_com(values)
                     print(f"Z=  {z}      Y= {j} ")
+
                     print("**********************")
+                    sensor.close()
                 case "3":
                     print("**********************")
                     sensor = readSensor(port='COM7', baudrate=115200)
-                    time.sleep(0.1) 
+                    time.sleep(0.1)
                     values = sensor.Readsens()  # Read sensor values
                     z=0
                     j=0
                     x=0
                     y=0
                     z,j = calculate_com(values)
-                    sensor.close
+                    sensor.close()
+                    print("**********************")
+                    print()
+                    print(f"Z= {z}     J= {j}")
+                    print(values[0]+values[1]+values[2]+values[3])
+                    print()
+
                     input("Press Enter to calculate next CoM...")
                     sensor = readSensor(port='COM7', baudrate=115200)
-                    time.sleep(0.1) 
+                    time.sleep(0.1)
                     values = sensor.Readsens()  # Read sensor values
                     x, y = calculate_com(values)
                     print("**********************")
@@ -164,11 +177,12 @@ if __name__ == "__main__":
                     plot_com(x, y, z)
                     print()
                     print(f"X= {x}     Y= {y}     Z= {z}")
+                    print(values[0]+values[1]+values[2]+values[3])
                     print("**********************")
-                    sensor.close()
+                    #sensor.close()
                     #time.sleep(0.1)  # Small delay to not flood the console
                     #sensor.close()
-            
+
     except KeyboardInterrupt:
         print("\nStopping sensor reading...")
     #finally:
